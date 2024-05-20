@@ -1,4 +1,4 @@
-from PySide6.QtWidgets import QMessageBox
+from PyQt6.QtWidgets import QMessageBox
 
 def display_critical_popup(message):
     msg = QMessageBox()

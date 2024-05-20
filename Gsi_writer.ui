@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>635</width>
-    <height>788</height>
+    <height>787</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -22,6 +22,12 @@
     <height>16777215</height>
    </size>
   </property>
+  <property name="font">
+   <font>
+    <family>Pretendard</family>
+    <pointsize>11</pointsize>
+   </font>
+  </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
@@ -35,7 +41,7 @@
       <height>741</height>
      </rect>
     </property>
-    <layout class="QVBoxLayout" name="verticalLayout_4" stretch="2,1,0,7,0">
+    <layout class="QVBoxLayout" name="verticalLayout_4" stretch="4,2,2,14,1">
      <property name="leftMargin">
       <number>10</number>
      </property>
@@ -61,6 +67,12 @@
          <width>7</width>
          <height>0</height>
         </size>
+       </property>
+       <property name="font">
+        <font>
+         <family>Pretendard</family>
+         <pointsize>11</pointsize>
+        </font>
        </property>
        <property name="title">
         <string>Model and Usage</string>
@@ -88,6 +100,12 @@
               <verstretch>1</verstretch>
              </sizepolicy>
             </property>
+            <property name="font">
+             <font>
+              <family>Pretendard</family>
+              <pointsize>11</pointsize>
+             </font>
+            </property>
             <property name="text">
              <string>SMART3</string>
             </property>
@@ -100,6 +118,12 @@
               <horstretch>1</horstretch>
               <verstretch>1</verstretch>
              </sizepolicy>
+            </property>
+            <property name="font">
+             <font>
+              <family>Pretendard</family>
+              <pointsize>11</pointsize>
+             </font>
             </property>
             <property name="text">
              <string>AI SOUND MAX</string>
@@ -130,6 +154,12 @@
               <verstretch>1</verstretch>
              </sizepolicy>
             </property>
+            <property name="font">
+             <font>
+              <family>Pretendard</family>
+              <pointsize>11</pointsize>
+             </font>
+            </property>
             <property name="text">
              <string>VTS</string>
             </property>
@@ -142,6 +172,12 @@
               <horstretch>1</horstretch>
               <verstretch>1</verstretch>
              </sizepolicy>
+            </property>
+            <property name="font">
+             <font>
+              <family>Pretendard</family>
+              <pointsize>11</pointsize>
+             </font>
             </property>
             <property name="text">
              <string>CTS_ON_GSI</string>
@@ -164,6 +200,12 @@
          <verstretch>1</verstretch>
         </sizepolicy>
        </property>
+       <property name="font">
+        <font>
+         <family>Pretendard</family>
+         <pointsize>11</pointsize>
+        </font>
+       </property>
        <property name="mouseTracking">
         <bool>true</bool>
        </property>
@@ -179,6 +221,12 @@
             <verstretch>1</verstretch>
            </sizepolicy>
           </property>
+          <property name="styleSheet">
+           <string notr="true">border-radius: 2.6px;
+border: 1px solid #C3C3C3;
+
+background: #FFF;</string>
+          </property>
           <property name="text">
            <string>-</string>
           </property>
@@ -191,6 +239,27 @@
             <horstretch>1</horstretch>
             <verstretch>1</verstretch>
            </sizepolicy>
+          </property>
+          <property name="font">
+           <font>
+            <family>Pretendard</family>
+            <pointsize>11</pointsize>
+           </font>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QPushButton
+{
+	border-radius: 6px;
+	background: #131329;
+	color:rgba(255, 255, 255, 1)
+}
+
+QPushButton:Pressed
+{
+	border-radius: 6px;
+	background: #252550;
+	color:rgba(255, 255, 255, 1)
+}</string>
           </property>
           <property name="text">
            <string>Open</string>
@@ -208,6 +277,12 @@
          <verstretch>1</verstretch>
         </sizepolicy>
        </property>
+       <property name="font">
+        <font>
+         <family>Pretendard</family>
+         <pointsize>11</pointsize>
+        </font>
+       </property>
        <property name="mouseTracking">
         <bool>true</bool>
        </property>
@@ -222,6 +297,12 @@
             <horstretch>1</horstretch>
             <verstretch>1</verstretch>
            </sizepolicy>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">border-radius: 2.6px;
+border: 1px solid #C3C3C3;
+
+background: #FFF;</string>
           </property>
           <property name="text">
            <string>-</string>
@@ -241,6 +322,27 @@
             <width>0</width>
             <height>0</height>
            </size>
+          </property>
+          <property name="font">
+           <font>
+            <family>Pretendard</family>
+            <pointsize>11</pointsize>
+           </font>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QPushButton
+{
+	border-radius: 6px;
+	background: #131329;
+	color:rgba(255, 255, 255, 1)
+}
+
+QPushButton:Pressed
+{
+	border-radius: 6px;
+	background: #252550;
+	color:rgba(255, 255, 255, 1)
+}</string>
           </property>
           <property name="text">
            <string>Open</string>
@@ -272,12 +374,32 @@
            <verstretch>1</verstretch>
           </sizepolicy>
          </property>
+         <property name="font">
+          <font>
+           <family>Pretendard</family>
+           <pointsize>11</pointsize>
+          </font>
+         </property>
          <property name="title">
           <string>Connected Devices</string>
          </property>
-         <layout class="QVBoxLayout" name="verticalLayout_5">
+         <layout class="QVBoxLayout" name="verticalLayout_5" stretch="1,9">
+          <property name="leftMargin">
+           <number>6</number>
+          </property>
           <item>
            <widget class="QPushButton" name="pushButton_Refresh">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+              <horstretch>1</horstretch>
+              <verstretch>1</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="font">
+             <font>
+              <pointsize>11</pointsize>
+             </font>
+            </property>
             <property name="text">
              <string>Refresh</string>
             </property>
@@ -291,6 +413,19 @@
               <verstretch>1</verstretch>
              </sizepolicy>
             </property>
+            <property name="styleSheet">
+             <string notr="true">QLable:enalbed{
+	border-radius: 2.6px;
+	border: 1px solid #C3C3C3;
+	background: #FFF;
+}
+
+QLable:disabled{
+	border-radius: 2.6px;
+	border: 1px solid #C3C3C3;
+	background: #888;
+}</string>
+            </property>
            </widget>
           </item>
          </layout>
@@ -300,6 +435,34 @@
      </item>
      <item>
       <widget class="QPushButton" name="pushButton_WI">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+         <horstretch>1</horstretch>
+         <verstretch>1</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="font">
+        <font>
+         <family>Pretendard</family>
+         <pointsize>11</pointsize>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">
+QPushButton
+{
+	border-radius: 2px;
+	background: #FA7801;
+	color:rgba(255, 255, 255, 1)
+}
+
+QPushButton:pressed {
+	border-radius: 2px;
+	background: #E76F00;
+	color:rgba(255, 255, 255, 1)
+}
+</string>
+       </property>
        <property name="text">
         <string>Write Image</string>
        </property>
