@@ -414,17 +414,12 @@ QPushButton:Pressed
              </sizepolicy>
             </property>
             <property name="styleSheet">
-             <string notr="true">QLable:enalbed{
+             <string notr="true">
 	border-radius: 2.6px;
 	border: 1px solid #C3C3C3;
 	background: #FFF;
-}
 
-QLable:disabled{
-	border-radius: 2.6px;
-	border: 1px solid #C3C3C3;
-	background: #888;
-}</string>
+</string>
             </property>
            </widget>
           </item>

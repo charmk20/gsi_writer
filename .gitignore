@@ -27,6 +27,7 @@ MANIFEST
 
 ## file
 pyvenv.cfg
+main.spec
 
 ## directory
 __pycache__/
