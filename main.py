@@ -100,6 +100,7 @@ class MainWindow(QMainWindow):
         if self.checkBox_cts.checkState() == Qt.CheckState.Checked:
             self.checkBox_vts.setCheckState(Qt.CheckState.Unchecked)
             self.pushButton_FO2.setEnabled(False)
+            self.label_BI.setText('-')
             self.label_BI.setEnabled(False)
         else : 
             self.checkBox_vts.setCheckState(Qt.CheckState.Checked)
