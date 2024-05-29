@@ -15,7 +15,14 @@ class MainWindow(QMainWindow):
     
     def __init__(self):
         super(MainWindow, self).__init__()
-        uic.loadUi("Gsi_writer.ui",self)
+        current_directory = os.getcwd()
+        ui_path = os.path.join(os.path.dirname(__file__), "Gsi_writer.ui")
+        
+        try:
+            uic.loadUi(ui_path,self)
+        except:
+            print(f'load Gsi_writter.ui ========> {current_directory}')
+       
         self.setFixedSize(QSize(635, 787))
         print("===> Init")
         self.setFunction()

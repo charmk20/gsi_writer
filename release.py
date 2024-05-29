@@ -8,30 +8,38 @@ def run_shell_command(command):
     ## print(result.stdout)
     return result.stdout
 
-def install_exe_package():
-    CurrOS = platform.system()
+def install_exe_package(CurrOS):
     if CurrOS == 'Windows':
         release_command = 'pyinstaller.exe --clean --noconsole -F main.py'
     else : 
-        release_command = 'pyinstaller -w -F main.py'
+        release_command = 'pyinstaller --clean --noconsole --onefile --add-data "Gsi_writer.ui:." main.py'
     run_shell_command(release_command)
 
-def remove_dist_folder(folder):
+def remove_dist_folder(folder, CurrOS):
     build_folder = os.path.join(folder, 'build') 
     exist = os.path.exists(build_folder)
     if exist == True:
-        run_shell_command('rmdir /S /Q build')
-
+        if CurrOS == "window":
+            run_shell_command('rmdir /S /Q build')
+        else:
+            run_shell_command('rm -rf build')
     dist_folder = os.path.join(folder, 'dist')      
     exist = os.path.exists(dist_folder)
     if exist == True:
-       run_shell_command('rmdir /S /Q dist')
+        if CurrOS == "window":
+            run_shell_command('rmdir /S /Q dist')
+        else:
+            run_shell_command('rm -rf /S /Q dist')
+            
+def copy_ui_to_dist(CurrOS):
+    if CurrOS == 'Windows':
+        run_shell_command('copy /Y Gsi_writer.ui dist')
+    else:
+        run_shell_command('cp Gsi_writer.ui .main')
 
-def copy_ui_to_dist():
-    run_shell_command('copy /Y Gsi_writer.ui dist')
-
+CurrOS = platform.system()
 current_directory = os.getcwd()
-remove_dist_folder(current_directory)
+remove_dist_folder(current_directory, CurrOS)
 print(f'=====> current directory :  {current_directory}')
-install_exe_package()
-copy_ui_to_dist()
+install_exe_package(CurrOS)
+copy_ui_to_dist(CurrOS)
