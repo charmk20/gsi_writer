@@ -225,7 +225,61 @@ class MainWindow(QMainWindow):
         fs_command = 'fastboot reboot'
         result = subprocess.run(fs_command, shell=True, capture_output=True, text=True)
         print(result)
-            
+
+    def fastboot_step_normal_image(img_folder):
+        dtbo        = "dtbo " + img_folder + "/dtbo.img" 
+        vbmeta      = "vbmeta " + img_folder + "/vbmeta.img"
+        vbmeta_system = "vbmeta_system " + img_folder + "/vbmeta_system.img"
+        boot        = "boot " + img_folder + "/boot.img"
+        recovery    = "recovery " +  img_folder + "/recovery.img"
+        super       = "super " + img_folder + "/super_empty.img"
+        system      = "system " + img_folder + "/system.img"
+        vendor      = "vendor " + img_folder + "/vendor.img"
+        product     = "product " + img_folder + "/product.img"
+        userdata    = "userdata " + img_folder + "/userdata.img"
+
+        pre_steps = {"devices", "flash unlock", "flash unlock_critical", "erase misc", "reboot-bootloader"}    
+        img_step1 = {dtbo, vbmeta, vbmeta_system, boot, recovery, super}
+        img_step2 = {system, vendor, product, userdata }
+        end_steps = {"flashing lock", "fastboot flashing lock_critical", "fastboot reboot"}
+
+        ## pre step
+        for pre_step in pre_steps:
+            fs_command = pre_step
+            result = subprocess.run(fs_command, shell=True, capture_output=True, text=True)
+            print(result)
+            time.sleep(10)
+
+        ## write image1 step
+        for img in img_step1:
+            fs_command = img
+            result = subprocess.run(fs_command, shell=True, capture_output=True, text=True)
+            print(result)
+
+        ## reboot bootloader
+        fs_command = 'fastboot reboot-fastboot'
+        result = subprocess.run(fs_command, shell=True, capture_output=True, text=True)
+        print(result)
+        time.sleep(10)
+
+        ## write image2 step
+        for img in img_step2:
+            fs_command = img
+            result = subprocess.run(fs_command, shell=True, capture_output=True, text=True)
+            print(result)
+    
+        ## reboot bootloader
+        fs_command = 'fastboot reboot-fastboot'
+        result = subprocess.run(fs_command, shell=True, capture_output=True, text=True)
+        print(result)
+        time.sleep(10)
+
+        for end_step in end_steps:
+            fs_command = end_step
+            result = subprocess.run(fs_command, shell=True, capture_output=True, text=True)
+            print(result)
+
+                
 ###############################################################
 #### MainLoop()
 ################################################################
