@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>635</width>
-    <height>787</height>
+    <width>642</width>
+    <height>796</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -41,7 +41,7 @@
       <height>741</height>
      </rect>
     </property>
-    <layout class="QVBoxLayout" name="verticalLayout_4" stretch="4,2,2,14,1">
+    <layout class="QVBoxLayout" name="verticalLayout_4" stretch="4,2,2,2,14,1">
      <property name="leftMargin">
       <number>10</number>
      </property>
@@ -133,7 +133,7 @@
          </layout>
         </item>
         <item>
-         <layout class="QVBoxLayout" name="verticalLayout_6" stretch="1,1">
+         <layout class="QVBoxLayout" name="verticalLayout_6" stretch="1,1,0">
           <property name="leftMargin">
            <number>10</number>
           </property>
@@ -181,6 +181,28 @@
             </property>
             <property name="text">
              <string>CTS_ON_GSI</string>
+            </property>
+            <property name="autoExclusive">
+             <bool>false</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="checkBox_SUSD">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+              <horstretch>1</horstretch>
+              <verstretch>1</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="font">
+             <font>
+              <family>Pretendard</family>
+              <pointsize>11</pointsize>
+             </font>
+            </property>
+            <property name="text">
+             <string>SU/SD</string>
             </property>
             <property name="autoExclusive">
              <bool>false</bool>
@@ -311,6 +333,89 @@ background: #FFF;</string>
         </item>
         <item>
          <widget class="QPushButton" name="pushButton_FO2">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+            <horstretch>1</horstretch>
+            <verstretch>1</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="font">
+           <font>
+            <family>Pretendard</family>
+            <pointsize>11</pointsize>
+           </font>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QPushButton
+{
+	border-radius: 6px;
+	background: #131329;
+	color:rgba(255, 255, 255, 1)
+}
+
+QPushButton:Pressed
+{
+	border-radius: 6px;
+	background: #252550;
+	color:rgba(255, 255, 255, 1)
+}</string>
+          </property>
+          <property name="text">
+           <string>Open</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item>
+      <widget class="QGroupBox" name="groupBox_Image_select_3">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+         <horstretch>1</horstretch>
+         <verstretch>1</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="font">
+        <font>
+         <family>Pretendard</family>
+         <pointsize>11</pointsize>
+        </font>
+       </property>
+       <property name="mouseTracking">
+        <bool>true</bool>
+       </property>
+       <property name="title">
+        <string>SU/SD Image Folder</string>
+       </property>
+       <layout class="QHBoxLayout" name="horizontalLayout_5" stretch="8,2">
+        <item>
+         <widget class="QLabel" name="label_SUSD">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+            <horstretch>1</horstretch>
+            <verstretch>1</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">border-radius: 2.6px;
+border: 1px solid #C3C3C3;
+
+background: #FFF;</string>
+          </property>
+          <property name="text">
+           <string>-</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="pushButton_FO3">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
             <horstretch>1</horstretch>

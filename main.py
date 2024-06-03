@@ -40,12 +40,15 @@ class MainWindow(QMainWindow):
     def setFunction(self):    
         self.pushButton_FO.clicked.connect(self.do_pushButton_FO)
         self.pushButton_FO2.clicked.connect(self.do_pushButton_FO2)
+        self.pushButton_FO3.clicked.connect(self.do_pushButton_FO3)
         self.pushButton_Refresh.clicked.connect(self.do_pushButton_Refresh)
         self.pushButton_WI.clicked.connect(self.do_pushButton_WI)
         self.radioButton_SMART3.clicked.connect(self.do_radio_button_click) 
         self.radioButton_SoundMax.clicked.connect(self.do_radio_button_click)     
         self.checkBox_cts.clicked.connect(self.do_checkbox_click_cts) 
-        self.checkBox_vts.clicked.connect(self.do_checkbox_click_vts)     
+        self.checkBox_vts.clicked.connect(self.do_checkbox_click_vts)  
+        self.checkBox_SUSD.clicked.connect(self.do_checkbox_click_SUSD)
+       
 
     ###############################################################
     ####
@@ -71,6 +74,17 @@ class MainWindow(QMainWindow):
             file_p = pathlib.Path(fn[0])
             print(str(file_p))
             self.label_BI.setText(str(file_p))
+
+    def do_pushButton_FO3(self):
+        print("do_pushButton_FO3")
+        fn = QFileDialog.getExistingDirectory(self, 'Select Folder which is included Image Files')
+        if fn == '':
+            pop_window.display_critical_popup("파일이 선택되지 않았습니다.")
+            self.label_BI.setText('-')
+        else:
+            file_p = pathlib.Path(fn)
+            print(str(file_p))
+            self.label_SUSD.setText(str(file_p))
 
     def do_pushButton_Refresh(self):
         print("do_pushButton_Refresh")
@@ -106,23 +120,55 @@ class MainWindow(QMainWindow):
     def do_checkbox_click_cts(self):
         if self.checkBox_cts.checkState() == Qt.CheckState.Checked:
             self.checkBox_vts.setCheckState(Qt.CheckState.Unchecked)
+            self.checkBox_SUSD.setCheckState(Qt.CheckState.Unchecked)
+            self.pushButton_FO.setEnabled(True)
             self.pushButton_FO2.setEnabled(False)
+            self.pushButton_FO3.setEnabled(False)
             self.label_BI.setText('-')
             self.label_BI.setEnabled(False)
-        else : 
-            self.checkBox_vts.setCheckState(Qt.CheckState.Checked)
-            self.pushButton_FO2.setEnabled(True)
-            self.label_BI.setEnabled(True)
+            self.label_SUSD.setText('-')
+            self.label_SUSD.setEnabled(False)
 
+    #    else : 
+    #        self.checkBox_vts.setCheckState(Qt.CheckState.Checked)
+    #        self.checkBox_SDSU.setCheckState(Qt.CheckState.Unchecked)
+    #        self.pushButton_FO2.setEnabled(True)
+    #        self.label_BI.setEnabled(True)
+#
     def do_checkbox_click_vts(self):
         if self.checkBox_vts.checkState() == Qt.CheckState.Checked:
             self.checkBox_cts.setCheckState(Qt.CheckState.Unchecked)
+            self.checkBox_SUSD.setCheckState(Qt.CheckState.Unchecked)
+            self.pushButton_FO.setEnabled(True)
             self.pushButton_FO2.setEnabled(True)
+            self.pushButton_FO3.setEnabled(False)
+            self.label_GSI.setEnabled(True)
             self.label_BI.setEnabled(True)
-        else : 
-            self.checkBox_cts.setCheckState(Qt.CheckState.Checked)
+            self.label_SUSD.setEnabled(False)
+            self.label_SUSD.setText('-')
+    #    else : 
+    #        self.checkBox_cts.setCheckState(Qt.CheckState.Checked)
+    #        self.pushButton_FO2.setEnabled(False)
+    #        self.label_BI.setEnabled(False)
+
+    def do_checkbox_click_SUSD(self):
+        if self.checkBox_SUSD.checkState() == Qt.CheckState.Checked:
+            self.checkBox_cts.setCheckState(Qt.CheckState.Unchecked)
+            self.checkBox_vts.setCheckState(Qt.CheckState.Unchecked)
+            self.pushButton_FO.setEnabled(False)
             self.pushButton_FO2.setEnabled(False)
+            self.pushButton_FO3.setEnabled(True)
+            self.label_GSI.setEnabled(False)
             self.label_BI.setEnabled(False)
+            self.label_SUSD.setEnabled(True)
+            self.label_GSI.setText('-')
+            self.label_BI.setText('-')
+    #    else : 
+    #        self.checkBox_cts.setCheckState(Qt.CheckState.Checked)
+    #        self.pushButton_FO2.setEnabled(False)
+    #        self.label_BI.setEnabled(False)
+
+
 
     def adb_connection(self):
         adb_run = 'adb.exe devices'
@@ -144,8 +190,11 @@ class MainWindow(QMainWindow):
             time.sleep(10)
             self.fastboot_step_3()
             time.sleep(10)
-        else :
+        elif self.checkBox_vts.checkState() == Qt.CheckState.Checked:
             self.fastboot_step_vts(self.label_BI.text(), self.label_GSI.text())
+        elif self.checkBox_SUSD.checkState() == Qt.CheckState.Checked:
+            self.fastboot_step_normal_image(self.label_SUSD.text())   
+        
 
     #########################################################
     def reboot_bootloader(self, selected_dev_serial):      
