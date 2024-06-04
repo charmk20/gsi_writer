@@ -23,7 +23,7 @@ class MainWindow(QMainWindow):
         except:
             print(f'load Gsi_writter.ui ========> {current_directory}')
        
-        self.setFixedSize(QSize(635, 787))
+        self.setFixedSize(QSize(635, 990))
         print("===> Init")
         self.setFunction()
         self.radioButton_SMART3.setChecked(False)
@@ -35,6 +35,8 @@ class MainWindow(QMainWindow):
         self.checkBox_cts.setCheckState(Qt.CheckState.Checked)
         self.pushButton_FO2.setEnabled(False)
         self.label_BI.setEnabled(False)
+        self.pushButton_FO3.setEnabled(False)
+        self.label_SUSD.setEnabled(False)
 
         
     def setFunction(self):    
@@ -179,6 +181,7 @@ class MainWindow(QMainWindow):
     #########################################################
     def do_pushButton_WI(self):        
         print("do_pushButton_WI")
+        
         dev_serial = self.listWidget_dev.currentItem().text()
         self.reboot_bootloader(dev_serial)
         time.sleep(10)
@@ -194,6 +197,8 @@ class MainWindow(QMainWindow):
             self.fastboot_step_vts(self.label_BI.text(), self.label_GSI.text())
         elif self.checkBox_SUSD.checkState() == Qt.CheckState.Checked:
             self.fastboot_step_normal_image(self.label_SUSD.text())   
+        else :
+            pop_window.display_critical_popup("Flash 할 이미지를 선택해 주세요")
         
 
     #########################################################
