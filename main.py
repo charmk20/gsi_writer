@@ -3,15 +3,19 @@ import sys
 from ppadb.client import Client as AdbClient
 from PyQt6 import uic
 from PyQt6.QtWidgets import QApplication
-from PyQt6.QtCore import QFile, QIODevice, Qt, QSize
+from PyQt6.QtCore import QFile, QIODevice, Qt, QSize, pyqtSignal
 from PyQt6.QtWidgets import QApplication, QMainWindow, QFileDialog, QDialog, QListWidget
 import pop_window
 import pathlib
 import os
 import time
 import subprocess
+import threading
 
 class MainWindow(QMainWindow):
+
+    # 시스널 정의 
+    noti_signal = pyqtSignal(str) 
     
     def __init__(self):
         super(MainWindow, self).__init__()
@@ -24,6 +28,8 @@ class MainWindow(QMainWindow):
             print(f'load Gsi_writter.ui ========> {current_directory}')
        
         self.setFixedSize(QSize(635, 990))
+        self.noti_signal.connect(self.noti_signal_handler)
+        
         print("===> Init")
         self.setFunction()
         self.radioButton_SMART3.setChecked(False)
@@ -37,6 +43,20 @@ class MainWindow(QMainWindow):
         self.label_BI.setEnabled(False)
         self.pushButton_FO3.setEnabled(False)
         self.label_SUSD.setEnabled(False)
+        self.progressBar.setStyleSheet("""
+            QProgressBar {
+                border: 2px solid #8f8f91;
+                border-radius: 5px;
+                background-color: #e0e0e0;
+            }
+
+            QProgressBar::chunk {
+                background-color: #0000FF;
+                width: 10px;
+                margin: 0.5px;
+            }
+        """)
+        self.progressBar.setValue(0)
 
         
     def setFunction(self):    
@@ -93,6 +113,11 @@ class MainWindow(QMainWindow):
         self.adb_connection()
         self.listWidget_dev.clear()
 
+        ## test_item = {"adb", "def", "kkk"}
+        ## for test in test_item:
+        ##     self.listWidget_dev.addItem(test)
+        ## 
+        ## return
         try: 
             client = AdbClient(host="127.0.0.1", port=5037)
             self.devices = client.devices()
@@ -108,10 +133,6 @@ class MainWindow(QMainWindow):
             fs_command = "adb shell getprop vendor.skb.dhcp.eth0.ipaddress"
             result = subprocess.run(fs_command, shell=True, capture_output=True, text=True)
             print(result)
-
-        ## test_item = {"adb", "def", "kkk"}
-        ## for test in test_item:
-        ##    self.window.listWidget_dev.addItem(test)
 
     def do_radio_button_click(self):
         if self.radioButton_SMART3.isChecked() == True:
@@ -177,28 +198,63 @@ class MainWindow(QMainWindow):
         result = subprocess.run(adb_run, shell=True, capture_output=True, text=True)
         print(f"adb.exe devices result ==> {result.returncode}")
         
-
+    def do_pushButton_WI(self): 
+        self.noti_signal.emit('P00')
+        self.pb_thread = threading.Thread(target=self.do_pushButton_WI_TH, daemon=True)
+        self.pb_thread.start()
+    
     #########################################################
-    def do_pushButton_WI(self):        
+    def do_pushButton_WI_TH(self):        
         print("do_pushButton_WI")
+
+        select_items = self.listWidget_dev.selectedItems()
+        if len(select_items) == 0:
+            self.noti_signal.emit("SelNoDev")
+            return
         
-        dev_serial = self.listWidget_dev.currentItem().text()
-        self.reboot_bootloader(dev_serial)
-        time.sleep(10)
-        
-        if self.checkBox_cts.checkState() == Qt.CheckState.Checked: ## for cts_on_gsi
-            self.fastboot_step_1()
-            time.sleep(10)
-            self.fastboot_step_2(self.label_GSI.text())
-            time.sleep(10)
-            self.fastboot_step_3()
-            time.sleep(10)
+        if self.checkBox_cts.checkState() == Qt.CheckState.Checked:
+            p = pathlib.Path(self.label_GSI.text())
+            if p.exists():
+                gsi_image = self.label_GSI.text()
+            else:
+                self.noti_signal.emit("WrongGsiPath")
+                return
+            
         elif self.checkBox_vts.checkState() == Qt.CheckState.Checked:
-            self.fastboot_step_vts(self.label_BI.text(), self.label_GSI.text())
+            p = pathlib.Path(self.label_GSI.text())
+            if p.exists():
+                gsi_image = self.label_GSI.text()
+            else:
+                self.noti_signal.emit("WrongGsiPath")
+                return
+            
+            p = pathlib.Path(self.label_BI.text())
+            if p.exists():
+                bi_image = self.label_BI.text()
+            else:
+                self.noti_signal.emit("WrongBiPath")
+                return
         elif self.checkBox_SUSD.checkState() == Qt.CheckState.Checked:
-            self.fastboot_step_normal_image(self.label_SUSD.text())   
-        else :
-            pop_window.display_critical_popup("Flash 할 이미지를 선택해 주세요")
+            p = pathlib.Path(self.label_SUSD.text())
+            if p.exists():
+                susd_folder = self.label_SUSD.text()
+            else:
+                self.noti_signal.emit("WrongSUSDPath")
+                return
+        else:
+            self.noti_signal.emit("NoCheckBox")
+
+        for select_item in select_items:
+            self.reboot_bootloader(select_item.text())
+            time.sleep(10)
+            if self.checkBox_cts.checkState() == Qt.CheckState.Checked: ## for cts_on_gsi
+                self.fastboot_cts_on_GSI(self.label_GSI.text())
+            elif self.checkBox_vts.checkState() == Qt.CheckState.Checked:
+                self.fastboot_step_vts(self.label_BI.text(), self.label_GSI.text())
+            elif self.checkBox_SUSD.checkState() == Qt.CheckState.Checked:
+                self.fastboot_step_normal_image(self.label_SUSD.text())   
+            else :
+                pop_window.display_critical_popup("Flash 할 이미지를 선택해 주세요")
         
 
     #########################################################
@@ -216,7 +272,7 @@ class MainWindow(QMainWindow):
 
     #########################################################
     ## fastboot
-    def fastboot_step_1(self):
+    def fastboot_cts_on_GSI(self, system_image_path):
         fs_command = 'fastboot devices'
         result = subprocess.run(fs_command, shell=True, capture_output=True, text=True)
         print(result)
@@ -226,32 +282,34 @@ class MainWindow(QMainWindow):
         fs_command = 'fastboot flashing unlock_critical'
         result = subprocess.run(fs_command, shell=True, capture_output=True, text=True)
         print(result)
-        fs_command = 'fastboot reboot fastboot'
-        result = subprocess.run(fs_command, shell=True, capture_output=True, text=True)
-        print(result)
-
-    def fastboot_step_2(self, system_image_path):
-        fs_command = 'fastboot flash system '+ system_image_path
-        result = subprocess.run(fs_command, shell=True, capture_output=True, text=True)
-        print(result)
+        self.noti_signal.emit('P10')
         fs_command = 'fastboot -w'
         result = subprocess.run(fs_command, shell=True, capture_output=True, text=True)
         print(result)
-        fs_command = 'fastboot reboot bootloader'
+        self.noti_signal.emit('P40')
+        fs_command = 'fastboot reboot fastboot'
         result = subprocess.run(fs_command, shell=True, capture_output=True, text=True)
         print(result)
-        
-    def fastboot_step_3(self):
-        fs_command = 'fastboot flashing lock'
+        time.sleep(10)
+        fs_command = 'delete-logical-partition product_a'
         result = subprocess.run(fs_command, shell=True, capture_output=True, text=True)
         print(result)
-        fs_command = 'fastboot flashing lock_critical'
+        fs_command = 'delete-logical-partition product_b'
         result = subprocess.run(fs_command, shell=True, capture_output=True, text=True)
         print(result)
+        fs_command = 'delete-logical-partition product'
+        result = subprocess.run(fs_command, shell=True, capture_output=True, text=True)
+        print(result)
+        self.noti_signal.emit('P60')
+        fs_command = 'fastboot flash system '+ system_image_path
+        result = subprocess.run(fs_command, shell=True, capture_output=True, text=True)
+        print(result)
+        self.noti_signal.emit('P90')
         fs_command = 'fastboot reboot'
         result = subprocess.run(fs_command, shell=True, capture_output=True, text=True)
         print(result)
-
+        time.sleep(2)
+        self.noti_signal.emit('P100')
 
     def fastboot_step_vts(self, bl_image, system_image_path):
         fs_command = 'fastboot devices'
@@ -263,22 +321,29 @@ class MainWindow(QMainWindow):
         fs_command = 'fastboot flashing unlock_critical'
         result = subprocess.run(fs_command, shell=True, capture_output=True, text=True)
         print(result) 
+        self.noti_signal.emit('P10')
         fs_command = 'fastboot flash boot '+ bl_image
         result = subprocess.run(fs_command, shell=True, capture_output=True, text=True)
         print(result)
+        self.noti_signal.emit('P40')
         fs_command = 'fastboot reboot fastboot'
         result = subprocess.run(fs_command, shell=True, capture_output=True, text=True)
         print(result)
         time.sleep(10)
+        self.noti_signal.emit('P60')
         fs_command = 'fastboot flash system ' + system_image_path
         result = subprocess.run(fs_command, shell=True, capture_output=True, text=True)
         print(result)
+        self.noti_signal.emit('P80')
         fs_command = 'fastboot -w'
         result = subprocess.run(fs_command, shell=True, capture_output=True, text=True)
         print(result)
+        self.noti_signal.emit('P90')
         fs_command = 'fastboot reboot'
         result = subprocess.run(fs_command, shell=True, capture_output=True, text=True)
         print(result)
+        time.sleep(1)
+        self.noti_signal.emit('P100')
 
     def fastboot_step_normal_image(self, img_folder):
         dtbo        = "dtbo " + img_folder + "/dtbo.img" 
@@ -298,11 +363,12 @@ class MainWindow(QMainWindow):
         end_steps = ["flashing lock", "flashing lock_critical", "reboot"]
 
         ## pre step
+        self.noti_signal.emit('P10')
         for pre_step in pre_steps:
             fs_command = "fastboot " + pre_step
             result = subprocess.run(fs_command, shell=True, capture_output=True, text=True)
             print(result)
-            
+        self.noti_signal.emit('P30')
         time.sleep(10)
 
         ## write image1 step
@@ -310,21 +376,25 @@ class MainWindow(QMainWindow):
             fs_command = "fastboot flash " + img
             result = subprocess.run(fs_command, shell=True, capture_output=True, text=True)
             print(result)
-
+        self.noti_signal.emit('P60')
+        
         ## reboot bootloader
         fs_command = 'fastboot reboot-fastboot'
         result = subprocess.run(fs_command, shell=True, capture_output=True, text=True)
         print(result)
-        time.sleep(10)
+        time.sleep(25)
+        self.noti_signal.emit('P70')
 
         ## write image2 step
         for img in img_step2:
             fs_command = "fastboot flash " + img
             result = subprocess.run(fs_command, shell=True, capture_output=True, text=True)
             print(result)
-    
+
+        self.noti_signal.emit('P90')    
+
         ## reboot bootloader
-        fs_command = 'fastboot reboot-fastboot'
+        fs_command = 'fastboot reboot-bootloader'
         result = subprocess.run(fs_command, shell=True, capture_output=True, text=True)
         print(result)
         time.sleep(10)
@@ -333,6 +403,45 @@ class MainWindow(QMainWindow):
             fs_command = "fastboot " + end_step
             result = subprocess.run(fs_command, shell=True, capture_output=True, text=True)
             print(result)
+
+        self.noti_signal.emit('P100')    
+
+    # 시그널 핸들러 정의
+    def noti_signal_handler(self, message):
+        if message == "SelNoDev":
+            pop_window.display_critical_popup('선택한 디바이스가 없습니다.\n디바이스를 선택하세요 !')
+        elif message == "WrongGsiPath":
+            pop_window.display_critical_popup('올바른 GSI Image 아니거나 잘못된 경로 입니다 !')
+        elif message == "WrongBiPath":    
+            pop_window.display_critical_popup('올바른 Bootloader Image 아니거나 잘못된 경로 입니다 !')
+        elif message == "WrongSUSDPath":   
+            pop_window.display_critical_popup('올바른 Image 폴더가 아니거나 잘못된 경로 입니다 !')
+        elif message == "NoCheckBox":
+            pop_window.display_critical_popup('작업이 선택되지 않았으니 작업을 선택해 주세요')
+        elif message == "P00":
+            self.progressBar.setValue(00)
+        elif message == "P10":
+            self.progressBar.setValue(10)
+        elif message == "P20":
+            self.progressBar.setValue(20)
+        elif message == "P30":
+            self.progressBar.setValue(30)
+        elif message == "P40":
+            self.progressBar.setValue(40)
+        elif message == "P50":
+            self.progressBar.setValue(50)
+        elif message == "P60":
+            self.progressBar.setValue(60)    
+        elif message == "P70":
+            self.progressBar.setValue(70)
+        elif message == "P80":
+            self.progressBar.setValue(80)
+        elif message == "P90":
+            self.progressBar.setValue(90)
+        elif message == "P100":
+            self.progressBar.setValue(100)
+        else :
+            print ("Invalid noti Signal")
 
                 
 ###############################################################
