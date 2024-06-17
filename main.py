@@ -113,6 +113,9 @@ class MainWindow(QMainWindow):
         self.adb_connection()
         self.listWidget_dev.clear()
 
+        self.noti_signal.emit("-")
+        self.noti_signal.emit('P00')
+
         ## test_item = {"adb", "def", "kkk"}
         ## for test in test_item:
         ##     self.listWidget_dev.addItem(test)
@@ -274,76 +277,112 @@ class MainWindow(QMainWindow):
     ## fastboot
     def fastboot_cts_on_GSI(self, system_image_path):
         fs_command = 'fastboot devices'
-        result = subprocess.run(fs_command, shell=True, capture_output=True, text=True)
-        print(result)
-        fs_command = 'fastboot flashing unlock'
-        result = subprocess.run(fs_command, shell=True, capture_output=True, text=True)
-        print(result)
-        fs_command = 'fastboot flashing unlock_critical'
-        result = subprocess.run(fs_command, shell=True, capture_output=True, text=True)
-        print(result)
+        self.noti_signal.emit(fs_command)
         self.noti_signal.emit('P10')
-        fs_command = 'fastboot -w'
         result = subprocess.run(fs_command, shell=True, capture_output=True, text=True)
         print(result)
+        
+        fs_command = 'fastboot flashing unlock'
+        self.noti_signal.emit(fs_command)
+        self.noti_signal.emit('P20')
+        result = subprocess.run(fs_command, shell=True, capture_output=True, text=True)
+        print(result)
+        
+        fs_command = 'fastboot flashing unlock_critical'
+        self.noti_signal.emit(fs_command)
+        self.noti_signal.emit('P30')
+        result = subprocess.run(fs_command, shell=True, capture_output=True, text=True)
+        print(result)
+        
+        fs_command = 'fastboot -w'
         self.noti_signal.emit('P40')
+        self.noti_signal.emit(fs_command)
+        result = subprocess.run(fs_command, shell=True, capture_output=True, text=True)
+        print(result)
+
         fs_command = 'fastboot reboot fastboot'
+        self.noti_signal.emit(fs_command)
         result = subprocess.run(fs_command, shell=True, capture_output=True, text=True)
         print(result)
         time.sleep(10)
-        fs_command = 'delete-logical-partition product_a'
-        result = subprocess.run(fs_command, shell=True, capture_output=True, text=True)
-        print(result)
-        fs_command = 'delete-logical-partition product_b'
-        result = subprocess.run(fs_command, shell=True, capture_output=True, text=True)
-        print(result)
-        fs_command = 'delete-logical-partition product'
-        result = subprocess.run(fs_command, shell=True, capture_output=True, text=True)
-        print(result)
+        self.noti_signal.emit('P50')
+
+        fs_command = 'fastboot delete-logical-partition product_a'
         self.noti_signal.emit('P60')
+        self.noti_signal.emit(fs_command)
+        result = subprocess.run(fs_command, shell=True, capture_output=True, text=True)
+        print(result)
+
+        fs_command = 'fastboot delete-logical-partition product_b'
+        self.noti_signal.emit('P70')
+        self.noti_signal.emit(fs_command)
+        result = subprocess.run(fs_command, shell=True, capture_output=True, text=True)
+        print(result)
+
+        fs_command = 'fastboot delete-logical-partition product'
+        self.noti_signal.emit('P70')
+        self.noti_signal.emit(fs_command)
+        result = subprocess.run(fs_command, shell=True, capture_output=True, text=True)
+        print(result)
+
         fs_command = 'fastboot flash system '+ system_image_path
+        self.noti_signal.emit('P80')
+        self.noti_signal.emit(fs_command)
         result = subprocess.run(fs_command, shell=True, capture_output=True, text=True)
         print(result)
-        self.noti_signal.emit('P90')
+
         fs_command = 'fastboot reboot'
+        self.noti_signal.emit('P90')
+        self.noti_signal.emit(fs_command)
         result = subprocess.run(fs_command, shell=True, capture_output=True, text=True)
         print(result)
+        
         time.sleep(2)
+        self.noti_signal.emit('Completed')
         self.noti_signal.emit('P100')
 
     def fastboot_step_vts(self, bl_image, system_image_path):
         fs_command = 'fastboot devices'
+        self.noti_signal.emit(fs_command)
         result = subprocess.run(fs_command, shell=True, capture_output=True, text=True)
         print(result)
         fs_command = 'fastboot flashing unlock'
+        self.noti_signal.emit(fs_command)
         result = subprocess.run(fs_command, shell=True, capture_output=True, text=True)
         print(result)
         fs_command = 'fastboot flashing unlock_critical'
+        self.noti_signal.emit(fs_command)
         result = subprocess.run(fs_command, shell=True, capture_output=True, text=True)
         print(result) 
         self.noti_signal.emit('P10')
         fs_command = 'fastboot flash boot '+ bl_image
+        self.noti_signal.emit(fs_command)
         result = subprocess.run(fs_command, shell=True, capture_output=True, text=True)
         print(result)
         self.noti_signal.emit('P40')
         fs_command = 'fastboot reboot fastboot'
+        self.noti_signal.emit(fs_command)
         result = subprocess.run(fs_command, shell=True, capture_output=True, text=True)
         print(result)
         time.sleep(10)
         self.noti_signal.emit('P60')
+        self.noti_signal.emit(fs_command)
         fs_command = 'fastboot flash system ' + system_image_path
         result = subprocess.run(fs_command, shell=True, capture_output=True, text=True)
         print(result)
         self.noti_signal.emit('P80')
         fs_command = 'fastboot -w'
+        self.noti_signal.emit(fs_command)
         result = subprocess.run(fs_command, shell=True, capture_output=True, text=True)
         print(result)
         self.noti_signal.emit('P90')
         fs_command = 'fastboot reboot'
+        self.noti_signal.emit(fs_command)
         result = subprocess.run(fs_command, shell=True, capture_output=True, text=True)
         print(result)
         time.sleep(1)
         self.noti_signal.emit('P100')
+        self.noti_signal.emit('Completed')
 
     def fastboot_step_normal_image(self, img_folder):
         dtbo        = "dtbo " + img_folder + "/dtbo.img" 
@@ -366,6 +405,7 @@ class MainWindow(QMainWindow):
         self.noti_signal.emit('P10')
         for pre_step in pre_steps:
             fs_command = "fastboot " + pre_step
+            self.noti_signal.emit(fs_command)
             result = subprocess.run(fs_command, shell=True, capture_output=True, text=True)
             print(result)
         self.noti_signal.emit('P30')
@@ -374,20 +414,28 @@ class MainWindow(QMainWindow):
         ## write image1 step
         for img in img_step1:
             fs_command = "fastboot flash " + img
+            self.noti_signal.emit(fs_command)
             result = subprocess.run(fs_command, shell=True, capture_output=True, text=True)
             print(result)
         self.noti_signal.emit('P60')
         
         ## reboot bootloader
         fs_command = 'fastboot reboot-fastboot'
+        self.noti_signal.emit(fs_command)
         result = subprocess.run(fs_command, shell=True, capture_output=True, text=True)
         print(result)
         time.sleep(25)
         self.noti_signal.emit('P70')
 
+        fs_command = 'fastboot create-logical-partition product 562535424'
+        self.noti_signal.emit(fs_command)
+        result = subprocess.run(fs_command, shell=True, capture_output=True, text=True)
+        print(result)
+
         ## write image2 step
         for img in img_step2:
             fs_command = "fastboot flash " + img
+            self.noti_signal.emit(fs_command)
             result = subprocess.run(fs_command, shell=True, capture_output=True, text=True)
             print(result)
 
@@ -395,30 +443,23 @@ class MainWindow(QMainWindow):
 
         ## reboot bootloader
         fs_command = 'fastboot reboot-bootloader'
+        self.noti_signal.emit(fs_command)
         result = subprocess.run(fs_command, shell=True, capture_output=True, text=True)
         print(result)
         time.sleep(10)
 
         for end_step in end_steps:
             fs_command = "fastboot " + end_step
+            self.noti_signal.emit(fs_command)
             result = subprocess.run(fs_command, shell=True, capture_output=True, text=True)
             print(result)
 
         self.noti_signal.emit('P100')    
+        self.noti_signal.emit('Completed')
 
     # 시그널 핸들러 정의
     def noti_signal_handler(self, message):
-        if message == "SelNoDev":
-            pop_window.display_critical_popup('선택한 디바이스가 없습니다.\n디바이스를 선택하세요 !')
-        elif message == "WrongGsiPath":
-            pop_window.display_critical_popup('올바른 GSI Image 아니거나 잘못된 경로 입니다 !')
-        elif message == "WrongBiPath":    
-            pop_window.display_critical_popup('올바른 Bootloader Image 아니거나 잘못된 경로 입니다 !')
-        elif message == "WrongSUSDPath":   
-            pop_window.display_critical_popup('올바른 Image 폴더가 아니거나 잘못된 경로 입니다 !')
-        elif message == "NoCheckBox":
-            pop_window.display_critical_popup('작업이 선택되지 않았으니 작업을 선택해 주세요')
-        elif message == "P00":
+        if message == "P00":
             self.progressBar.setValue(00)
         elif message == "P10":
             self.progressBar.setValue(10)
@@ -440,10 +481,20 @@ class MainWindow(QMainWindow):
             self.progressBar.setValue(90)
         elif message == "P100":
             self.progressBar.setValue(100)
+        elif message == "SelNoDev":
+            pop_window.display_critical_popup('선택한 디바이스가 없습니다.\n디바이스를 선택하세요 !')
+        elif message == "WrongGsiPath":
+            pop_window.display_critical_popup('올바른 GSI Image 아니거나 잘못된 경로 입니다 !')
+        elif message == "WrongBiPath":    
+            pop_window.display_critical_popup('올바른 Bootloader Image 아니거나 잘못된 경로 입니다 !')
+        elif message == "WrongSUSDPath":   
+            pop_window.display_critical_popup('올바른 Image 폴더가 아니거나 잘못된 경로 입니다 !')
+        elif message == "NoCheckBox":
+            pop_window.display_critical_popup('작업이 선택되지 않았으니 작업을 선택해 주세요')
         else :
-            print ("Invalid noti Signal")
+            dsip = "status : " + message
+            self.label_status.setText(dsip)
 
-                
 ###############################################################
 #### MainLoop()
 ################################################################
