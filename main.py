@@ -16,7 +16,7 @@ class MainWindow(QMainWindow):
 
     # 시스널 정의 
     noti_signal = pyqtSignal(str) 
-    
+
     def __init__(self):
         super(MainWindow, self).__init__()
         current_directory = os.getcwd()
@@ -57,6 +57,7 @@ class MainWindow(QMainWindow):
             }
         """)
         self.progressBar.setValue(0)
+        self.image_writing = False
 
         
     def setFunction(self):    
@@ -201,10 +202,11 @@ class MainWindow(QMainWindow):
         result = subprocess.run(adb_run, shell=True, capture_output=True, text=True)
         print(f"adb.exe devices result ==> {result.returncode}")
         
-    def do_pushButton_WI(self): 
+    def do_pushButton_WI(self):     
         self.noti_signal.emit('P00')
         self.pb_thread = threading.Thread(target=self.do_pushButton_WI_TH, daemon=True)
         self.pb_thread.start()
+        self.pushButton_WI.setEnabled(False)
     
     #########################################################
     def do_pushButton_WI_TH(self):        
@@ -213,6 +215,7 @@ class MainWindow(QMainWindow):
         select_items = self.listWidget_dev.selectedItems()
         if len(select_items) == 0:
             self.noti_signal.emit("SelNoDev")
+            self.pushButton_WI.setEnabled(True)
             return
         
         if self.checkBox_cts.checkState() == Qt.CheckState.Checked:
@@ -221,6 +224,7 @@ class MainWindow(QMainWindow):
                 gsi_image = self.label_GSI.text()
             else:
                 self.noti_signal.emit("WrongGsiPath")
+                self.pushButton_WI.setEnabled(True)
                 return
             
         elif self.checkBox_vts.checkState() == Qt.CheckState.Checked:
@@ -229,6 +233,7 @@ class MainWindow(QMainWindow):
                 gsi_image = self.label_GSI.text()
             else:
                 self.noti_signal.emit("WrongGsiPath")
+                self.pushButton_WI.setEnabled(True)
                 return
             
             p = pathlib.Path(self.label_BI.text())
@@ -236,6 +241,7 @@ class MainWindow(QMainWindow):
                 bi_image = self.label_BI.text()
             else:
                 self.noti_signal.emit("WrongBiPath")
+                self.pushButton_WI.setEnabled(True)
                 return
         elif self.checkBox_SUSD.checkState() == Qt.CheckState.Checked:
             p = pathlib.Path(self.label_SUSD.text())
@@ -243,6 +249,7 @@ class MainWindow(QMainWindow):
                 susd_folder = self.label_SUSD.text()
             else:
                 self.noti_signal.emit("WrongSUSDPath")
+                self.pushButton_WI.setEnabled(True)
                 return
         else:
             self.noti_signal.emit("NoCheckBox")
@@ -259,7 +266,7 @@ class MainWindow(QMainWindow):
             else :
                 pop_window.display_critical_popup("Flash 할 이미지를 선택해 주세요")
         
-
+        self.pushButton_WI.setEnabled(True)
     #########################################################
     def reboot_bootloader(self, selected_dev_serial):      
         if len(self.devices) < 1:
