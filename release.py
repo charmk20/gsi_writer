@@ -10,7 +10,7 @@ def run_shell_command(command):
 
 def install_exe_package(CurrOS):
     if CurrOS == 'Windows':
-        release_command = 'pyinstaller.exe --clean --noconsole -F main.py'
+        release_command = 'pyinstaller --clean --onefile --add-data "Gsi_writer.ui:." main.py'
     else : 
         release_command = 'pyinstaller --clean --noconsole --onefile --add-data "Gsi_writer.ui:." main.py'
     run_shell_command(release_command)
@@ -19,14 +19,14 @@ def remove_dist_folder(folder, CurrOS):
     build_folder = os.path.join(folder, 'build') 
     exist = os.path.exists(build_folder)
     if exist == True:
-        if CurrOS == "window":
+        if CurrOS == "Windows":
             run_shell_command('rmdir /S /Q build')
         else:
             run_shell_command('rm -rf build')
     dist_folder = os.path.join(folder, 'dist')      
     exist = os.path.exists(dist_folder)
     if exist == True:
-        if CurrOS == "window":
+        if CurrOS == "Windows":
             run_shell_command('rmdir /S /Q dist')
         else:
             run_shell_command('rm -rf /S /Q dist')
