@@ -283,6 +283,7 @@ class MainWindow(QMainWindow):
     #########################################################
     ## fastboot
     def fastboot_cts_on_GSI(self, system_image_path):
+        system_image_path = pathlib.Path(system_image_path)
         fs_command = 'fastboot devices'
         self.noti_signal.emit(fs_command)
         self.noti_signal.emit('P10')
@@ -349,6 +350,9 @@ class MainWindow(QMainWindow):
         self.noti_signal.emit('P100')
 
     def fastboot_step_vts(self, bl_image, system_image_path):
+        bl_image = pathlib.Path(bl_image)
+        system_image_path = pathlib.Path(system_image_path)
+
         fs_command = 'fastboot devices'
         self.noti_signal.emit(fs_command)
         result = subprocess.run(fs_command, shell=True, capture_output=True, text=True)
@@ -392,16 +396,17 @@ class MainWindow(QMainWindow):
         self.noti_signal.emit('Completed')
 
     def fastboot_step_normal_image(self, img_folder):
-        dtbo        = "dtbo " + img_folder + "/dtbo.img" 
-        vbmeta      = "vbmeta " + img_folder + "/vbmeta.img"
-        vbmeta_system = "vbmeta_system " + img_folder + "/vbmeta_system.img"
-        boot        = "boot " + img_folder + "/boot.img"
-        recovery    = "recovery " +  img_folder + "/recovery.img"
-        super       = "super " + img_folder + "/super_empty.img"
-        system      = "system " + img_folder + "/system.img"
-        vendor      = "vendor " + img_folder + "/vendor.img"
-        product     = "product " + img_folder + "/product.img"
-        userdata    = "userdata " + img_folder + "/userdata.img"
+        img_folder  = pathlib.Path(img_folder)
+        dtbo        = "dtbo " + str(os.path.join(img_folder, 'dtbo.img')) 
+        vbmeta      = "vbmeta " + str(os.path.join(img_folder, 'vbmeta.img'))
+        vbmeta_system = "vbmeta_system " + str(os.path.join(img_folder, 'vbmeta_system.img'))
+        boot        = "boot " + str(os.path.join(img_folder, 'boot.img'))
+        recovery    = "recovery " + str(os.path.join(img_folder, 'recovery.img'))
+        super       = "super " + str(os.path.join(img_folder, 'super_empty.img'))
+        system      = "system " + str(os.path.join(img_folder, 'system.img'))
+        vendor      = "vendor " + str(os.path.join(img_folder, 'vendor.img'))
+        product     = "product " + str(os.path.join(img_folder, 'product.img'))
+        userdata    = "userdata " + str(os.path.join(img_folder, 'userdata.img'))
 
         pre_steps = ['devices', 'flashing unlock', 'flashing unlock_critical', 'erase misc', 'reboot-bootloader']   
         img_step1 = [dtbo, vbmeta, vbmeta_system, boot, recovery, super]

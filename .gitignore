@@ -30,6 +30,8 @@ pyvenv.cfg
 main.spec
 .main
 dist.zip
+*.dll
+*.exe
 
 ## directory
 __pycache__/
@@ -37,4 +39,5 @@ bin/
 include/
 lib/
 myenv/
+Android/
 
