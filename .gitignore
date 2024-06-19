@@ -28,6 +28,8 @@ MANIFEST
 ## file
 pyvenv.cfg
 main.spec
+.main
+dist.zip
 
 ## directory
 __pycache__/

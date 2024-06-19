@@ -134,7 +134,7 @@ class MainWindow(QMainWindow):
 
         for dev in self.devices:
             self.listWidget_dev.addItem(dev.serial)
-            fs_command = "adb shell getprop vendor.skb.dhcp.eth0.ipaddress"
+            fs_command = 'adb -s ' + dev.serial +' shell getprop vendor.skb.dhcp.eth0.ipaddress'
             result = subprocess.run(fs_command, shell=True, capture_output=True, text=True)
             print(result)
 
