@@ -27,7 +27,7 @@ class MainWindow(QMainWindow):
         except:
             print(f'load Gsi_writter.ui ========> {current_directory}')
        
-        self.setFixedSize(QSize(635, 990))
+        self.setFixedSize(QSize(900, 990))
         self.noti_signal.connect(self.noti_signal_handler)
         
         print("===> Init")
@@ -106,23 +106,48 @@ class MainWindow(QMainWindow):
             self.label_BI.setText('-')
         else:
             file_p = pathlib.Path(fn)
-            print(str(file_p))
-            self.label_SUSD.setText(str(file_p))
+            if self.check_exist_firmware_image(file_p) == False:
+                pop_window.display_critical_popup("유효한 폴더가 아닙니다.\n 유효한 이미지가 포함된 폴더를 선택해 주세요 !")
+                self.label_SUSD.setText('-')        
+            else : 
+                print(str(file_p))            
+                 ## 파일 존재 여부 확인
+                self.label_SUSD.setText(str(file_p))
+
+    def check_exist_firmware_image(self, folder_p):
+        file_names = [  'dtbo.img',
+                        'vbmeta.img',
+                        'vbmeta_system.img',
+                        'boot.img',
+                        'recovery.img',
+                        'super_empty.img',
+                        'system.img',
+                        'vendor.img',
+                        'product.img',
+                        'userdata.img' ]
+
+        for fn in file_names:
+            file = folder_p / fn
+            if file.is_file():
+                print(f"file exist = {file}")
+            else:
+                return False
+        return True    
 
     def do_pushButton_Refresh(self):
         print("do_pushButton_Refresh")
         self.adb_connection()
         self.listWidget_dev.clear()
 
-        self.noti_signal.emit("-")
-        self.noti_signal.emit('P00')
+        ## self.noti_signal.emit("-")
+        ## self.noti_signal.emit('P00')
 
         ## test_item = {"adb", "def", "kkk"}
         ## for test in test_item:
         ##     self.listWidget_dev.addItem(test)
         ## 
         ## return
-        try: 
+        try:
             client = AdbClient(host="127.0.0.1", port=5037)
             self.devices = client.devices()
         except:
