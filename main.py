@@ -163,12 +163,11 @@ class MainWindow(QMainWindow):
 
         if self.checkBox_cts.checkState() == Qt.CheckState.Checked: 
             mode = "CtsOnGsi"
-        elif self.checkBox_cts.checkState() == Qt.CheckState.Checked: 
+        elif self.checkBox_vts.checkState() == Qt.CheckState.Checked: 
             mode = "Vts"
         else:
             mode = "SuSd"
 
-        
         for dev in self.devices:
             if mode == "CtsOnGsi":
                 if dev.serial in CTS_ON_GSI_devices:
