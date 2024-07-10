@@ -135,6 +135,10 @@ class MainWindow(QMainWindow):
         return True    
 
     def do_pushButton_Refresh(self):
+
+        VTS_devices = ['SKBFXYWR0LXX', 'SKBFXYWR0LWR']
+        CTS_ON_GSI_devices = ['SKBFXYWR0LX5', 'SKBFXYWR0LWK', 'SKBFXYWR0LW9', 'SKBFXYWR0LXT']
+
         print("do_pushButton_Refresh")
         self.adb_connection()
         self.listWidget_dev.clear()
@@ -157,11 +161,33 @@ class MainWindow(QMainWindow):
         if len(self.devices) < 1:
             pop_window.display_critical_popup("연결된 디바이스가 없습니다.")
 
+        if self.checkBox_cts.checkState() == Qt.CheckState.Checked: 
+            mode = "CtsOnGsi"
+        elif self.checkBox_cts.checkState() == Qt.CheckState.Checked: 
+            mode = "Vts"
+        else:
+            mode = "SuSd"
+
+        
         for dev in self.devices:
-            self.listWidget_dev.addItem(dev.serial)
-            fs_command = 'adb -s ' + dev.serial +' shell getprop vendor.skb.dhcp.eth0.ipaddress'
-            result = subprocess.run(fs_command, shell=True, capture_output=True, text=True)
-            print(result)
+            if mode == "CtsOnGsi":
+                if dev.serial in CTS_ON_GSI_devices:
+                    self.listWidget_dev.addItem(dev.serial)
+                    fs_command = 'adb -s ' + dev.serial +' shell getprop vendor.skb.dhcp.eth0.ipaddress'
+                    result = subprocess.run(fs_command, shell=True, capture_output=True, text=True)
+                    print(result)
+            elif mode == "Vts":
+                if dev.serial in VTS_devices:
+                    self.listWidget_dev.addItem(dev.serial)
+                    fs_command = 'adb -s ' + dev.serial +' shell getprop vendor.skb.dhcp.eth0.ipaddress'
+                    result = subprocess.run(fs_command, shell=True, capture_output=True, text=True)
+                    print(result)
+            else:
+                self.listWidget_dev.addItem(dev.serial)
+                fs_command = 'adb -s ' + dev.serial +' shell getprop vendor.skb.dhcp.eth0.ipaddress'
+                result = subprocess.run(fs_command, shell=True, capture_output=True, text=True)
+                print(result)
+            
 
     def do_radio_button_click(self):
         if self.radioButton_SMART3.isChecked() == True:
