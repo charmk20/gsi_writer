@@ -27,7 +27,7 @@ class MainWindow(QMainWindow):
         except:
             print(f'load Gsi_writter.ui ========> {current_directory}')
        
-        self.setFixedSize(QSize(635, 990))
+        self.setFixedSize(QSize(900, 990))
         self.noti_signal.connect(self.noti_signal_handler)
         
         print("===> Init")
@@ -106,23 +106,52 @@ class MainWindow(QMainWindow):
             self.label_BI.setText('-')
         else:
             file_p = pathlib.Path(fn)
-            print(str(file_p))
-            self.label_SUSD.setText(str(file_p))
+            if self.check_exist_firmware_image(file_p) == False:
+                pop_window.display_critical_popup("유효한 폴더가 아닙니다.\n 유효한 이미지가 포함된 폴더를 선택해 주세요 !")
+                self.label_SUSD.setText('-')        
+            else : 
+                print(str(file_p))            
+                 ## 파일 존재 여부 확인
+                self.label_SUSD.setText(str(file_p))
+
+    def check_exist_firmware_image(self, folder_p):
+        file_names = [  'dtbo.img',
+                        'vbmeta.img',
+                        'vbmeta_system.img',
+                        'boot.img',
+                        'recovery.img',
+                        'super_empty.img',
+                        'system.img',
+                        'vendor.img',
+                        'product.img',
+                        'userdata.img' ]
+
+        for fn in file_names:
+            file = folder_p / fn
+            if file.is_file():
+                print(f"file exist = {file}")
+            else:
+                return False
+        return True    
 
     def do_pushButton_Refresh(self):
+
+        VTS_devices = ['SKBFXYWR0LXX', 'SKBFXYWR0LWR']
+        CTS_ON_GSI_devices = ['SKBFXYWR0LX5', 'SKBFXYWR0LWK', 'SKBFXYWR0LW9', 'SKBFXYWR0LXT']
+
         print("do_pushButton_Refresh")
         self.adb_connection()
         self.listWidget_dev.clear()
 
-        self.noti_signal.emit("-")
-        self.noti_signal.emit('P00')
+        ## self.noti_signal.emit("-")
+        ## self.noti_signal.emit('P00')
 
         ## test_item = {"adb", "def", "kkk"}
         ## for test in test_item:
         ##     self.listWidget_dev.addItem(test)
         ## 
         ## return
-        try: 
+        try:
             client = AdbClient(host="127.0.0.1", port=5037)
             self.devices = client.devices()
         except:
@@ -132,11 +161,32 @@ class MainWindow(QMainWindow):
         if len(self.devices) < 1:
             pop_window.display_critical_popup("연결된 디바이스가 없습니다.")
 
+        if self.checkBox_cts.checkState() == Qt.CheckState.Checked: 
+            mode = "CtsOnGsi"
+        elif self.checkBox_vts.checkState() == Qt.CheckState.Checked: 
+            mode = "Vts"
+        else:
+            mode = "SuSd"
+
         for dev in self.devices:
-            self.listWidget_dev.addItem(dev.serial)
-            fs_command = 'adb -s ' + dev.serial +' shell getprop vendor.skb.dhcp.eth0.ipaddress'
-            result = subprocess.run(fs_command, shell=True, capture_output=True, text=True)
-            print(result)
+            if mode == "CtsOnGsi":
+                if dev.serial in CTS_ON_GSI_devices:
+                    self.listWidget_dev.addItem(dev.serial)
+                    fs_command = 'adb -s ' + dev.serial +' shell getprop vendor.skb.dhcp.eth0.ipaddress'
+                    result = subprocess.run(fs_command, shell=True, capture_output=True, text=True)
+                    print(result)
+            elif mode == "Vts":
+                if dev.serial in VTS_devices:
+                    self.listWidget_dev.addItem(dev.serial)
+                    fs_command = 'adb -s ' + dev.serial +' shell getprop vendor.skb.dhcp.eth0.ipaddress'
+                    result = subprocess.run(fs_command, shell=True, capture_output=True, text=True)
+                    print(result)
+            else:
+                self.listWidget_dev.addItem(dev.serial)
+                fs_command = 'adb -s ' + dev.serial +' shell getprop vendor.skb.dhcp.eth0.ipaddress'
+                result = subprocess.run(fs_command, shell=True, capture_output=True, text=True)
+                print(result)
+            
 
     def do_radio_button_click(self):
         if self.radioButton_SMART3.isChecked() == True:
