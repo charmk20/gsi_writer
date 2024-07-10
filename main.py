@@ -333,7 +333,7 @@ class MainWindow(QMainWindow):
         result = subprocess.run(fs_command, shell=True, capture_output=True, text=True)
         print(result)
 
-        fs_command = 'fastboot flash system '+ system_image_path
+        fs_command = 'fastboot flash system '+ str(system_image_path)
         self.noti_signal.emit('P80')
         self.noti_signal.emit(fs_command)
         result = subprocess.run(fs_command, shell=True, capture_output=True, text=True)
@@ -366,7 +366,7 @@ class MainWindow(QMainWindow):
         result = subprocess.run(fs_command, shell=True, capture_output=True, text=True)
         print(result) 
         self.noti_signal.emit('P10')
-        fs_command = 'fastboot flash boot '+ bl_image
+        fs_command = 'fastboot flash boot '+ str(bl_image)
         self.noti_signal.emit(fs_command)
         result = subprocess.run(fs_command, shell=True, capture_output=True, text=True)
         print(result)
@@ -378,7 +378,7 @@ class MainWindow(QMainWindow):
         time.sleep(10)
         self.noti_signal.emit('P60')
         self.noti_signal.emit(fs_command)
-        fs_command = 'fastboot flash system ' + system_image_path
+        fs_command = 'fastboot flash system ' + str(system_image_path)
         result = subprocess.run(fs_command, shell=True, capture_output=True, text=True)
         print(result)
         self.noti_signal.emit('P80')
